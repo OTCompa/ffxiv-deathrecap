@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dalamud.Game.Command;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using DeathRecap.Events;
+using DeathRecap.Game;
 using DeathRecap.UI;
 
 namespace DeathRecap;
@@ -81,6 +85,8 @@ public class DeathRecapPlugin : IDalamudPlugin {
 
     private void Snapshot(string command, string arguments)
     {
+        var chatMsg = new SeString(new TextPayload("Creating snapshot"));
+        Service.ChatGui.Print(new XivChatEntry { Message = chatMsg, Type = this.Configuration.ChatType });
         this.SnapshotEvents = true;
     }
 

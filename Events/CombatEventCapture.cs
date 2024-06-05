@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using DeathRecap.Game;
@@ -219,20 +222,14 @@ public class CombatEventCapture : IDisposable {
 
             if (plugin.SnapshotEvents)
             {
-                if (!plugin.SnapshotEntityList.Contains(entityId))
+                plugin.SnapshotEvents = false;
+                foreach (Dalamud.Game.ClientState.Party.PartyMember player in Service.PartyList)
                 {
-                    plugin.SnapshotEntityList.Add(entityId);
-                    if (combatEvents.Remove(entityId, out var events))
+                    if (combatEvents.Remove(player.ObjectId, out var events))
                     {
-                        var death = new Death { PlayerId = entityId, PlayerName = p.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };
-                        plugin.DeathsPerPlayer.AddEntry(entityId, death);
+                        var death = new Death { PlayerId = player.ObjectId, PlayerName = player.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };
+                        plugin.DeathsPerPlayer.AddEntry(player.ObjectId, death);
                         plugin.NotificationHandler.DisplaySnapshot(death);
-                    }
-
-                    if (plugin.SnapshotEntityList.Count() == Service.PartyList.Count())
-                    {
-                        plugin.SnapshotEvents = false;
-                        plugin.SnapshotEntityList.Clear();
                     }
                 }
             }
