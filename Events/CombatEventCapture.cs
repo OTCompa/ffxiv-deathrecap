@@ -15,7 +15,7 @@ using Action = Lumina.Excel.GeneratedSheets.Action;
 namespace DeathRecap.Events;
 
 public class CombatEventCapture : IDisposable {
-    private readonly Dictionary<uint, List<CombatEvent>> combatEvents = new();
+    public readonly Dictionary<uint, List<CombatEvent>> combatEvents = new();
     private readonly DeathRecapPlugin plugin;
 
     private unsafe delegate void ReceiveAbilityDelegate(
@@ -219,20 +219,6 @@ public class CombatEventCapture : IDisposable {
 
             if (Service.ObjectTable.SearchById(entityId) is not PlayerCharacter p)
                 return;
-
-            if (plugin.SnapshotEvents)
-            {
-                plugin.SnapshotEvents = false;
-                foreach (Dalamud.Game.ClientState.Party.PartyMember player in Service.PartyList)
-                {
-                    if (combatEvents.Remove(player.ObjectId, out var events))
-                    {
-                        var death = new Death { PlayerId = player.ObjectId, PlayerName = player.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };
-                        plugin.DeathsPerPlayer.AddEntry(player.ObjectId, death);
-                        plugin.NotificationHandler.DisplaySnapshot(death);
-                    }
-                }
-            }
 
             switch ((ActorControlCategory)type) {
                 case ActorControlCategory.DoT:

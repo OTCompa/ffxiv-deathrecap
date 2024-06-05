@@ -138,8 +138,8 @@ public class NotificationHandler : Window {
                 var chatMsg = HasAuthor(plugin.Configuration.ChatType)
                     ? new SeString(new TextPayload("Snapshot for "), chatLinkPayload, new TextPayload(" completed "), new UIForegroundPayload(710), new TextPayload("[ Show Damage Recap ]"),
                         new UIForegroundPayload(0), new DeathNotificationPayload(death.TimeOfDeath.Ticks, death.PlayerId), RawPayload.LinkTerminator)
-                    : new SeString(chatLinkPayload, new UIForegroundPayload(1), new TextPayload(death.PlayerName), new UIForegroundPayload(0),
-                        new TextPayload(" Damage snapshot "), new UIForegroundPayload(710), new TextPayload("[ Show Death Recap ]"), new UIForegroundPayload(0),
+                    : new SeString(new TextPayload("Snapshot: "), chatLinkPayload, new UIForegroundPayload(1), new TextPayload(death.PlayerName), new UIForegroundPayload(0),
+                        new UIForegroundPayload(710), new TextPayload("[ Show Death Recap ]"), new UIForegroundPayload(0),
                         new DeathNotificationPayload(death.TimeOfDeath.Ticks, death.PlayerId), RawPayload.LinkTerminator);
                 Service.ChatGui.Print(new XivChatEntry { Message = chatMsg, Type = plugin.Configuration.ChatType, Name = death.PlayerName });
                 break;

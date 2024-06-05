@@ -32,9 +32,6 @@ public class DeathRecapPlugin : IDalamudPlugin {
 
     private DateTime lastClean = DateTime.Now;
 
-    public bool SnapshotEvents { get; set; } = false;
-    public List<uint> SnapshotEntityList { get; set; } = new();
-
     public DeathRecapPlugin(DalamudPluginInterface pluginInterface) {
         Service.Initialize(pluginInterface);
 
@@ -60,7 +57,7 @@ public class DeathRecapPlugin : IDalamudPlugin {
         Service.CommandManager.AddHandler("/drs",
             new CommandInfo(this.Snapshot)
             {
-                HelpMessage = "Snapshot last 60 seconds of damage"
+                HelpMessage = "Snapshot last x seconds of damage"
             }
             );
 
@@ -85,9 +82,18 @@ public class DeathRecapPlugin : IDalamudPlugin {
 
     private void Snapshot(string command, string arguments)
     {
+        var combatEvents = CombatEventCapture.combatEvents;
         var chatMsg = new SeString(new TextPayload("Creating snapshot"));
         Service.ChatGui.Print(new XivChatEntry { Message = chatMsg, Type = this.Configuration.ChatType });
-        this.SnapshotEvents = true;
+        foreach (Dalamud.Game.ClientState.Party.PartyMember player in Service.PartyList)
+        {
+            if (combatEvents.Remove(player.ObjectId, out var events))
+            {
+                var death = new Death { PlayerId = player.ObjectId, PlayerName = player.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };
+                this.DeathsPerPlayer.AddEntry(player.ObjectId, death);
+                this.NotificationHandler.DisplaySnapshot(death);
+            }
+        }
     }
 
     public void Dispose() {
