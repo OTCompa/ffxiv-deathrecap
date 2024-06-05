@@ -125,6 +125,32 @@ public class NotificationHandler : Window {
         }
     }
 
+    public void DisplaySnapshot(Death death)
+    {
+        var displayType = plugin.ConditionEvaluator.GetNotificationType(death.PlayerId);
+        switch (displayType)
+        {
+            case NotificationStyle.Popup:
+                popupDeath = death;
+                IsOpen = true;
+                break;
+            case NotificationStyle.Chat:
+                var chatMsg = HasAuthor(plugin.Configuration.ChatType)
+                    ? new SeString(new TextPayload("Snapshot for "), chatLinkPayload, new TextPayload(" completed "), new UIForegroundPayload(710), new TextPayload("[ Show Damage Recap ]"),
+                        new UIForegroundPayload(0), new DeathNotificationPayload(death.TimeOfDeath.Ticks, death.PlayerId), RawPayload.LinkTerminator)
+                    : new SeString(chatLinkPayload, new UIForegroundPayload(1), new TextPayload(death.PlayerName), new UIForegroundPayload(0),
+                        new TextPayload(" Damage snapshot "), new UIForegroundPayload(710), new TextPayload("[ Show Death Recap ]"), new UIForegroundPayload(0),
+                        new DeathNotificationPayload(death.TimeOfDeath.Ticks, death.PlayerId), RawPayload.LinkTerminator);
+                Service.ChatGui.Print(new XivChatEntry { Message = chatMsg, Type = plugin.Configuration.ChatType, Name = death.PlayerName });
+                break;
+            case NotificationStyle.OpenDeathRecap:
+                plugin.Window.IsOpen = true;
+                plugin.Window.SelectedPlayer = death.PlayerId;
+                plugin.Window.SelectedDeath = 0;
+                break;
+        }
+    }
+
     private static bool HasAuthor(XivChatType chatType) =>
         chatType switch {
             XivChatType.None => false,

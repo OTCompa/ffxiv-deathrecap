@@ -217,6 +217,26 @@ public class CombatEventCapture : IDisposable {
             if (Service.ObjectTable.SearchById(entityId) is not PlayerCharacter p)
                 return;
 
+            if (plugin.SnapshotEvents)
+            {
+                if (!plugin.SnapshotEntityList.Contains(entityId))
+                {
+                    plugin.SnapshotEntityList.Add(entityId);
+                    if (combatEvents.Remove(entityId, out var events))
+                    {
+                        var death = new Death { PlayerId = entityId, PlayerName = p.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };
+                        plugin.DeathsPerPlayer.AddEntry(entityId, death);
+                        plugin.NotificationHandler.DisplaySnapshot(death);
+                    }
+
+                    if (plugin.SnapshotEntityList.Count() == Service.PartyList.Count())
+                    {
+                        plugin.SnapshotEvents = false;
+                        plugin.SnapshotEntityList.Clear();
+                    }
+                }
+            }
+
             switch ((ActorControlCategory)type) {
                 case ActorControlCategory.DoT:
                     combatEvents.AddEntry(entityId, new CombatEvent.DoT { Snapshot = p.Snapshot(), Amount = amount });

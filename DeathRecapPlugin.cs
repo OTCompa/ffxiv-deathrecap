@@ -28,6 +28,9 @@ public class DeathRecapPlugin : IDalamudPlugin {
 
     private DateTime lastClean = DateTime.Now;
 
+    public bool SnapshotEvents { get; set; } = false;
+    public List<uint> SnapshotEntityList { get; set; } = new();
+
     public DeathRecapPlugin(DalamudPluginInterface pluginInterface) {
         Service.Initialize(pluginInterface);
 
@@ -50,6 +53,12 @@ public class DeathRecapPlugin : IDalamudPlugin {
         var commandInfo = new CommandInfo((_, _) => Window.Toggle()) { HelpMessage = "Open the death recap window" };
         Service.CommandManager.AddHandler("/deathrecap", commandInfo);
         Service.CommandManager.AddHandler("/dr", commandInfo);
+        Service.CommandManager.AddHandler("/drs",
+            new CommandInfo(this.Snapshot)
+            {
+                HelpMessage = "Snapshot last 60 seconds of damage"
+            }
+            );
 
 #if DEBUG
         try {
@@ -70,6 +79,10 @@ public class DeathRecapPlugin : IDalamudPlugin {
 #endif
     }
 
+    private void Snapshot(string command, string arguments)
+    {
+        this.SnapshotEvents = true;
+    }
 
     public void Dispose() {
         CombatEventCapture.Dispose();
