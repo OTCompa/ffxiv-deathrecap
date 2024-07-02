@@ -85,8 +85,9 @@ public class DeathRecapPlugin : IDalamudPlugin {
         var combatEvents = CombatEventCapture.combatEvents;
         var chatMsg = new SeString(new TextPayload("Creating snapshot"));
         Service.ChatGui.Print(new XivChatEntry { Message = chatMsg, Type = this.Configuration.ChatType });
-        foreach (Dalamud.Game.ClientState.Party.PartyMember player in Service.PartyList)
+        foreach (Dalamud.Game.ClientState.Party.IPartyMember player in Service.PartyList)
         {
+            Service.PluginLog.Debug(player.Name.ToString() + player.ObjectId.ToString());
             if (combatEvents.Remove(player.ObjectId, out var events))
             {
                 var death = new Death { PlayerId = player.ObjectId, PlayerName = player.Name.TextValue, TimeOfDeath = DateTime.Now, Events = events };

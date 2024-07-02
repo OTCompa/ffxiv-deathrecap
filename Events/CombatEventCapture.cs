@@ -15,7 +15,7 @@ using Action = Lumina.Excel.GeneratedSheets.Action;
 namespace DeathRecap.Events;
 
 public class CombatEventCapture : IDisposable {
-    public readonly Dictionary<uint, List<CombatEvent>> combatEvents = new();
+    public readonly Dictionary<ulong, List<CombatEvent>> combatEvents = new();
     private readonly DeathRecapPlugin plugin;
 
     private unsafe delegate void ProcessPacketActionEffectDelegate(
