@@ -28,11 +28,11 @@ public class DeathRecapPlugin : IDalamudPlugin {
 
     public WindowSystem WindowSystem { get; }
 
-    public Dictionary<uint, List<Death>> DeathsPerPlayer { get; } = new();
+    public Dictionary<ulong, List<Death>> DeathsPerPlayer { get; } = new();
 
     private DateTime lastClean = DateTime.Now;
 
-    public DeathRecapPlugin(DalamudPluginInterface pluginInterface) {
+    public DeathRecapPlugin(IDalamudPluginInterface pluginInterface) {
         Service.Initialize(pluginInterface);
 
         Configuration = Configuration.Get(pluginInterface);
