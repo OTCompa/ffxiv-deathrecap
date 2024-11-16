@@ -102,5 +102,6 @@ public class DeathRecapPlugin : IDalamudPlugin {
         Service.Framework.Update -= FrameworkOnUpdate;
         Service.CommandManager.RemoveHandler("/deathrecap");
         Service.CommandManager.RemoveHandler("/dr");
+        Service.CommandManager.RemoveHandler("/drs");
     }
 }
